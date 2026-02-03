@@ -1,20 +1,27 @@
 <template>
+  <!-- 使用网格布局容器 -->
   <div class="grid-container">
+    <!-- 头部组件 -->
     <the-header class="header" />
+    <!-- 演示提示区域 -->
     <div class="demo">
       <p>
         This page is for demonstration purposes only. All data will be lost
         after a page refresh
       </p>
     </div>
+    <!-- 任务列表区域 -->
     <div class="grid-item-todo">
+      <!-- 使用PostIt组件作为容器 -->
       <post-it>
+        <!-- 如果没有任务，显示提示信息 -->
         <div v-if="!display" class="no-tasks" style="display: flex; flex-direction: column">
           <div class="unselectable"> {{ formatDate(new Date(date)) }} </div>
           <h2 class="unselectable">No Tasks to Display</h2>
         </div>
-
+        <!-- 如果有任务，显示任务列表 -->
         <div v-else>
+          <!-- 显示当前日期 -->
           <h1 class="unselectable">
             {{
               formatDate(new Date(tasksSlice.date)) !== "Invalid Date"
@@ -22,6 +29,7 @@
               : ""
             }}
           </h1>
+          <!-- 任务列表表头 -->
           <div class="flex-headers unselectable">
             <div class="header-number">#</div>
             <div class="header-text">Description</div>
@@ -30,28 +38,38 @@
             <div class="header-completed">Status</div>
           </div>
         </div>
+
+        <!-- 使用draggable组件实现任务拖拽排序 -->
         <draggable :list="tasksSlice.tasks" item-key="task_id" @change="updateList">
           <template #item="{ element }">
+            <!-- 单个任务项 -->
             <div class="flexbox">
+              <!-- 任务优先级 -->
               <div class="flex-id">
                 <p>{{ element.priority }}</p>
               </div>
+              <!-- 任务文本，双击可编辑 -->
               <div class="flex-text" :class="{ editSelectedBorder: element.editable }">
                 <p :contenteditable="element.editable" @input="editText" @blur="applyEditChanges(element)">
                   {{ element.text }}
                 </p>
               </div>
+              <!-- 任务操作按钮 -->
               <div class="flex-buttons" @mouseover="showButtons = element.priority" @mouseout="showButtons = null">
+                 <!-- 编辑按钮 -->
                 <img src="@/assets/tasks/edit.png" class="edit-img" v-show="showButtons === element.priority"
                   @click="makeEditable(element)" :class="{ editSelected: element.editable }" />
+                <!-- 删除按钮 -->
                 <img src="@/assets/tasks/delete.png" alt="delete-image" class="delete-img" @click="deleteTask(element)"
                   v-show="showButtons === element.priority" />
-                <img @click="checkUncheck(element)" :src="element.completed ? uncheckedBox : checkedBox" alt="status"
+                <!-- 完成状态切换按钮 -->
+                  <img @click="checkUncheck(element)" :src="element.completed ? uncheckedBox : checkedBox" alt="status"
                   class="status-img" />
               </div>
             </div>
           </template>
         </draggable>
+        <!-- 添加新任务的表单 -->
         <div>
           <form class="form-control" @submit.prevent="addTask">
             <input class="task-input" @blur="clearInvalidInput" @keyup="clearInvalidInput" v-model="enteredText"
@@ -59,15 +77,19 @@
             <button class="button-74">Add</button>
           </form>
         </div>
+        <!-- 无效输入提示 -->
         <span v-if="invalidInput" class="invalid-input">Please Enter Text</span>
       </post-it>
     </div>
 
+    <!-- 日历区域 -->
     <div class="grid-item-calendar">
       <h1>{{ date }}</h1>
+      <!-- 日历组件 -->
       <Datepicker inline :enableTimePicker="false" :monthChangeOnScroll="false" v-model="date" autoApply
         @update:modelValue="handleDate" />
-      <div v-if="totalTasks" class="task-status">
+      <!-- 任务统计 -->
+        <div v-if="totalTasks" class="task-status">
         <p>
           # Tasks: <span id="total-tasks">{{ totalTasks }}</span>
         </p>
@@ -81,27 +103,38 @@
         </p>
       </div>
     </div>
+    <!-- 底部组件 -->
     <the-footer class="footer" />
   </div>
 </template>
 
 <script setup>
+// 导入Vue的响应式API
 import { ref, watch, reactive } from "vue";
+// 导入拖拽组件
 import draggable from "vuedraggable";
+// 导入布局组件
 import PostIt from "@/components/layout/PostIt.vue";
-
+// 导入日历组件
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
+// 当前日期
 const date = ref(new Date().toISOString().slice(0, 10));
+// 无效输入标志
 const invalidInput = ref(false);
+// 新任务的输入文本
 const enteredText = ref("");
+// 编辑任务时的文本
 const editedText = ref("");
+// 所有任务列表
 const tasksList = reactive([]);
 
-// Getting array for specific date
+// Getting array for specific date 获取指定日期的任务
 const tasksSlice = ref([]);
+// 是否显示任务列表
 const display = ref(false);
+// 检查是否有2022-11-28的任务
 if (tasksList.filter((arr) => arr["date"] === "2022-11-28").length === 0) {
   // eslint-disable-next-line
   display.value = false;
@@ -109,38 +142,44 @@ if (tasksList.filter((arr) => arr["date"] === "2022-11-28").length === 0) {
   tasksSlice.value = tasksList.filter((arr) => arr["date"] === "2022-11-28")[0];
   display.value = true;
 }
+// 控制操作按钮显示
 const showButtons = ref(null);
 
-// Count the number of tasks WILL BE USED IN WATCHER
+// Count the number of tasks WILL BE USED IN WATCHER 任务统计变量
 const notCompletedTasks = ref(null);
 const completedTasks = ref(null);
 const totalTasks = ref(null);
-// count number of Not completed tasks
+// count number of Not completed tasks 计算未完成任务数
 if (tasksSlice.value.length > 0) {
   notCompletedTasks.value = tasksSlice.value.tasks.filter(
     (ob) => !ob.completed
   ).length;
 }
 
+// 实时监听任务列表数据的变化，并自动更新任务统计信息（总数、已完成数、未完成数）
 watch(
   [tasksSlice],
   () => {
+    //统计数据计算（有有效数据时）
     if ("date" in tasksSlice.value) {
       totalTasks.value = tasksSlice.value.tasks.length;
       notCompletedTasks.value = tasksSlice.value.tasks.filter(
         (ob) => !ob.completed
       ).length;
       completedTasks.value = totalTasks.value - notCompletedTasks.value;
-    } else {
+    } 
+    //重置统计数据（无有效数据时）
+    else {
       totalTasks.value = null;
       completedTasks.value = null;
       notCompletedTasks.value = null;
     }
   },
+  //deep: true 才能监听到对象内部属性的变化（比如 tasks 数组新增 / 删除任务、date 字段更新等）
   { deep: true }
 );
 
-// custom function to return date in DD month-long YYYY format
+// custom function to return date in DD month-long YYYY format 自定义函数，将日期格式化为"DD month-long YYYY"格式
 function formatDate(dateInput) {
   return dateInput.toLocaleDateString("en-US", {
     month: "long",
@@ -149,26 +188,26 @@ function formatDate(dateInput) {
   });
 }
 
-// WORKING WITH CALENDAR
+// WORKING WITH CALENDAR 处理日期选择事件
 
 const handleDate = (modelData) => {
   date.value = modelData.toISOString().slice(0, 10);
-  // getting new slice based on picked date
+  // getting new slice based on picked date   获取选中日期的任务
   tasksSlice.value = tasksList.filter((arr) => arr["date"] === date.value)[0];
   display.value = true;
-  // creating empty array if there no tasks on picked date
+  // creating empty array if there no tasks on picked date 如果选中日期没有任务，创建空数组
   if (!tasksSlice.value) {
     tasksSlice.value = ref([]);
     display.value = false;
   }
 };
 
-// listen to input inside edited paragraph text
+// listen to input inside edited paragraph text 监听任务文本编辑
 function editText(event) {
   editedText.value = event.target.innerText;
 }
 
-// make SELECTED paragraph tag editable
+// make SELECTED paragraph tag editable 切换任务文本的可编辑状态
 // No link with backend here - elements become uneditable after refresh
 function makeEditable(element) {
   tasksSlice.value.tasks.forEach((el, idx) => {
@@ -178,7 +217,7 @@ function makeEditable(element) {
     }
   });
 }
-// apply changes
+// apply changes  应用任务文本编辑
 function applyEditChanges(element) {
   if (editedText.value) {
     tasksSlice.value.tasks.forEach((el, idx) => {
@@ -189,50 +228,56 @@ function applyEditChanges(element) {
   }
 }
 
+// 导入任务状态图标
 const checkedBox = new URL("@/assets/tasks/checked_box.png", import.meta.url).href;
 const uncheckedBox = new URL("@/assets/tasks/unchecked_box.png", import.meta.url).href;
 
 
-// adding the task
+// adding the task 添加新任务
 function addTask() {
   if (enteredText.value !== "") {
-    // add date if empty object
+    // add date if empty object 如果当前日期没有任务对象，创建一个
     if (!("date" in tasksSlice.value)) {
       tasksSlice.value = { date: date.value, tasks: [] };
     }
+    // 添加新任务
     tasksSlice.value.tasks.push({
       text: enteredText.value,
       priority: tasksSlice.value.tasks.length + 1,
       completed: false,
       task_id: (Math.random() + 1).toString(36).substring(7),
     });
+    // 清空输入框
     enteredText.value = "";
     display.value = true;
+    // 将任务添加到总任务列表
     tasksList.push(tasksSlice.value);
   } else {
+    // 设置无效输入标志
     invalidInput.value = true;
   }
 }
-// clear invalid input - to be used at blur
+// clear invalid input - to be used at blur 清除无效输入标志
 function clearInvalidInput() {
   invalidInput.value = false;
 }
-// Deleting tasks
+// Deleting tasks 删除任务
 function deleteTask(element) {
   let index = tasksSlice.value.tasks.indexOf(element);
   tasksSlice.value.tasks.splice(index, 1);
+  // 如果删除后没有任务，隐藏任务列表
   if (tasksSlice.value.tasks.length === 0) {
     display.value = false;
   }
   updateList();
 }
-// Checking or unchecking specific object in an array
+// Checking or unchecking specific object in an array 切换任务完成状态
 function checkUncheck(element) {
   let index = tasksSlice.value.tasks.indexOf(element);
   tasksSlice.value.tasks[index].completed =
     !tasksSlice.value.tasks[index].completed;
 }
-// update tasks index/id on change - on drag
+// update tasks index/id on change - on drag  更新任务优先级（拖拽后）
 function updateList() {
   tasksSlice.value.tasks.forEach((element, index) => {
     tasksSlice.value.tasks[index].priority = index + 1;
@@ -241,14 +286,19 @@ function updateList() {
 </script>
 
 <style scoped>
+/* 使用Kalam字体 */
 * {
   font-family: "Kalam", cursive;
 }
 
+/* 标题居中 */
 h1 {
   text-align: center;
 }
 
+/* 禁止选择文本 */
+/* 常用在交互元素：按钮、导航链接、图标按钮等，避免用户点击时误选文字 
+   装饰元素：页面标题、Logo、装饰性文字等，防止不必要的文本选中*/
 .unselectable {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -256,9 +306,10 @@ h1 {
   -moz-user-select: none;
   -ms-user-select: none;
   -o-user-select: none;
-  user-select: none;
+  user-select: none;  /*禁止选中文本 */
 }
 
+/* 添加任务表单样式 */
 .form-control {
   margin-top: 20px;
   display: flex;
@@ -267,6 +318,7 @@ h1 {
   margin-bottom: 10px;
 }
 
+/* 任务输入框样式 */
 .task-input {
   width: 80%;
   margin-left: 30px;
@@ -277,6 +329,7 @@ h1 {
   border: 2px solid #422800;
 }
 
+/* 无任务提示样式 */
 .no-tasks {
   height: 100px;
   justify-content: center;
@@ -287,26 +340,30 @@ h1 {
   margin-top: 40px;
 }
 
-/* GENERAL PAGE LAYOUT WITH GRIDS */
+/* GENERAL PAGE LAYOUT WITH GRIDS  使用网格布局 */
 .grid-container {
   min-height: 100vh;
   display: grid;
-  grid-template-areas:
+  grid-template-areas:  
+  /*每个字符串代表一行，字符串里的单词代表列。
+  相同的单词代表同一个区域，会合并成一个单元格 */
     "header header"
     "demo demo"
     "todo calendar"
     "footer footer";
-  grid-template-rows: 60px 60px 1fr 60px;
+  grid-template-rows: 60px 60px 1fr 60px;  /*1fr，表示占据容器剩余的所有可用空间*/
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 10px;  /*单元格(行间距和列间距)之间的间隔*/
 }
 
+/* 任务列表区域 */
 .grid-item-todo {
   grid-area: todo;
 }
 
+/* 演示提示区域 */
 .demo {
-  grid-area: demo;
+  grid-area: demo;  /* 定位到demo区域 */
   margin: 5px;
   border: 2px solid rgb(107, 4, 4);
   background-color: #a48399;
@@ -322,11 +379,13 @@ h1 {
   font-weight: bold;
 }
 
+/* 日历区域 */
 .grid-item-calendar {
   grid-area: calendar;
   /* background: #e7e7b6; */
 }
 
+/* 响应式设计，适配移动设备 */
 @media (max-width: 768px) {
   .grid-container {
     grid-template-columns: 1fr;
@@ -371,7 +430,7 @@ h1 {
   }
 }
 
-/* TO-DO HEADINGS WITH FLEXBOX */
+/* TO-DO HEADINGS WITH FLEXBOX 任务列表表头样式 */
 
 .flex-headers {
   display: flex;
@@ -383,6 +442,7 @@ h1 {
   font-weight: bold;
 }
 
+/* 表头各列样式 */
 .header-number {
   text-align: center;
   justify-content: center;
@@ -403,7 +463,7 @@ h1 {
   margin-right: 5px;
 }
 
-/* TO-DO INNER LAYOUT WITH FLEXBOX */
+/* TO-DO INNER LAYOUT WITH FLEXBOX 任务项样式 */
 
 .flexbox {
   display: flex;
@@ -412,6 +472,7 @@ h1 {
   cursor: default;
 }
 
+/* 任务优先列样式 */
 .flex-id {
   flex-basis: 15px;
   display: flex;
@@ -426,6 +487,7 @@ h1 {
   margin-block-end: 0px;
 }
 
+/* 任务文本样式 */
 .flex-text {
   /* background: lightgray; */
   text-align: justify;
@@ -434,18 +496,20 @@ h1 {
   line-height: 12pt;
 }
 
+/* 段落样式 */
 p {
   margin-block-start: 10px;
   margin-block-end: 0px;
 }
 
 /* Change border of the text if edit is selected*/
-
+/* 编辑状态的文本样式 */
 .editSelectedBorder {
   border: 0.5px solid orange;
   cursor: auto;
 }
 
+/* 任务操作按钮区域样式 */
 .flex-buttons {
   /* background: lightyellow; */
   flex-basis: 70px;
@@ -455,7 +519,7 @@ p {
   padding: 3px;
 }
 
-/* EDIT */
+/* EDIT 编辑按钮样式 */
 .edit-img {
   width: 30px;
   height: 30px;
@@ -466,7 +530,7 @@ p {
   transform: rotate(19deg);
 }
 
-/* DELETE */
+/* DELETE 删除按钮样式 */
 .delete-img {
   width: 30px;
   height: 30px;
@@ -476,7 +540,7 @@ p {
   filter: invert(39%) sepia(5%) saturate(4834%) hue-rotate(314deg) brightness(91%) contrast(100%);
 }
 
-/* CHECKBOX */
+/* CHECKBOX 完成状态按钮样式  */
 .status-img {
   width: 30px;
   height: 30px;
@@ -484,7 +548,7 @@ p {
   margin-right: 5px;
 }
 
-/* BUTTON */
+/* BUTTON  按钮样式*/
 .button-74 {
   background-color: #fbeee0;
   border: 2px solid #422800;
@@ -515,12 +579,14 @@ p {
   transform: translate(2px, 2px);
 }
 
+/* 无效输入提示样式 */
 .invalid-input {
   color: #b04b4b;
   margin-right: 50px;
   font-weight: bold;
 }
 
+/* 任务统计样式 */
 .task-status p {
   display: inline-block;
   margin-right: 20px;

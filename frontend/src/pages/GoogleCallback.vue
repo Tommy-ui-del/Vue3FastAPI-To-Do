@@ -5,6 +5,7 @@
                 Authenticating via Google credentials...
             </h2>
             <div style="display: flex; justify-content: center;">
+                <!-- 自定义加载组件：显示转圈/跳动等加载动画 -->
                 <the-spinner></the-spinner>
             </div>
         </div>
@@ -15,25 +16,27 @@
   
   
 <script setup>
-import TheSpinner from "@/components/layout/TheSpinner.vue";
+import TheSpinner from "@/components/layout/TheSpinner.vue";   // 导入加载动画组件
 
-import { onMounted } from 'vue';
-import { useAuthStore } from "@/store/authStore";
-
-
-const authStore = useAuthStore();
+import { onMounted } from 'vue';  // 导入生命周期钩子
+import { useAuthStore } from "@/store/authStore";   // 导入认证store
 
 
+const authStore = useAuthStore();   // 获取认证store实例
+
+// 处理Google认证的函数
+//() => 是箭头函数，比普通 function() 写法更简洁，且会继承外层作用域的 this（在 Vue 组件中非常实用）
 const authenticateViaBackend = async () => {
+    // 从URL哈希中提取access_token
     const accessToken = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
+    // 调用store中的loginWithGoogle方法进行后端认证
     const authenticationSuccess = await authStore.loginWithGoogle(accessToken);
 
     if (authenticationSuccess) {
-        // Close the pop-up
+       // 认证成功，关闭弹窗
         window.close();
 
-        // Make sure the original tab is in full-screen mode
-        // Redirect to main page
+        // 如果有父窗口（打开弹窗的窗口），重定向到首页
         if (window.opener) {
             window.opener.location.href = '/';
 
@@ -41,6 +44,7 @@ const authenticateViaBackend = async () => {
     }
 };
 
+// 组件挂载后执行认证
 onMounted(async () => {
     await authenticateViaBackend();
 })

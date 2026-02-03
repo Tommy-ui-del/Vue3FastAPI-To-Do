@@ -1,5 +1,6 @@
 <template>
   <router-view></router-view>
+  <!--使用<router-view>作为占位符，根据当前路由渲染对应的组件-->
 </template>
 
 <style>

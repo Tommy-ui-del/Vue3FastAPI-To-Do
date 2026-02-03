@@ -1,34 +1,44 @@
 <template>
+  <!-- 使用PostIt组件作为容器，提供便签纸风格的UI -->
   <PostIt class="post-it">
+    <!-- 登录表单，提交时调用handleLogin方法 -->
     <form @submit.prevent="handleLogin">
       <h2>Login to Continue</h2>
+      <!-- 用户名/邮箱输入框 -->
       <div class="icon-div">
         <img src="@/assets/register/user.png" alt="user" class="user-img" />
         <input type="text" placeholder="Username or Email" name="uname" required v-model="username"
           @blur="authStore.clearError()" />
       </div>
 
+       <!-- 密码输入框 -->
       <div class="icon-div">
         <img src="@/assets/register/password.png" alt="password" class="password-img" />
 
         <input id="inline-input" :type="passwordType" placeholder="Password" name="psw" required v-model="password"
           @blur="authStore.clearError()" />
-        <img :src="showPassword ? openEyesURL : closedEyesURL" alt="show-password" class="show-password-img"
+          <!-- 显示/隐藏密码的图标 -->
+          <img :src="showPassword ? openEyesURL : closedEyesURL" alt="show-password" class="show-password-img"
           @click="toggleShow" />
       </div>
+      <!-- 登录按钮 -->
       <button class="button-74" type="submit">Login</button>
+      <!-- 错误消息显示 -->
       <div id="error-message" v-if="errorLogIn">
         {{ errorMessage }}
       </div>
 
 
+      <!-- 注册链接 -->
       <div style="margin-top: 15px;">
         Don't have an account yet?
         <router-link to="/register">Register</router-link>
       </div>
 
+      <!-- 分隔线 -->
       <p class="decorated mt-5" style="user-select: none"><span>or</span></p>
 
+      <!-- Google登录按钮 -->
       <div class="icon-div" id="google" @click="authStore.googleAuthenticate()">
         <img src="@/assets/register/google.png" alt="password" class="password-img" />
         <input id="inline-input" placeholder="Continue with Google" readonly style="cursor: pointer;" />
@@ -39,38 +49,52 @@
 </template>
 
 <script setup>
+// 导入Vue的ref函数，用于创建响应式数据
 import { ref } from "vue";
+// 导入认证store，用于处理登录逻辑
 import { useAuthStore } from "@/store/authStore.js";
+// 导入PostIt组件，作为容器
 import PostIt from "@/components/layout/PostIt.vue";
+// 导入storeToRefs，用于从store中解构响应式数据
 import { storeToRefs } from "pinia";
+// 导入Google Analytics事件跟踪函数
 import { event } from "vue-gtag";
 
+// 获取认证store实例
 const authStore = useAuthStore();
 
+// 导入显示/隐藏密码的图标URL
 const openEyesURL = new URL("@/assets/register/eyes.png", import.meta.url).href;
 const closedEyesURL = new URL("@/assets/register/closed_eyes.png", import.meta.url).href;
 
-const username = ref("");
-const password = ref("");
-const showPassword = ref(false);
-const passwordType = ref("password");
+// 创建响应式数据
+const username = ref("");  // 用户名/邮箱
+const password = ref("");  // 密码
+const showPassword = ref(false);  // 是否显示密码
+const passwordType = ref("password");  // 密码输入框类型
 
+// 从store中解构错误状态
 const { errorMessage, errorLogIn } = storeToRefs(authStore);
 
+// 切换密码显示/隐藏
 const toggleShow = () => {
   showPassword.value = !showPassword.value;
   if (showPassword.value) {
-    passwordType.value = "text";
+    passwordType.value = "text"; // 显示密码
   } else {
-    passwordType.value = "password";
+    passwordType.value = "password"; // 隐藏密码
   }
 }
+// 处理登录
 const handleLogin = async () => {
+  // 调用store中的login方法进行登录
   await authStore.login(username.value, password.value);
+  // 跟踪用户登录事件
   await userLoggedInGA();
 
 }
 
+// 跟踪用户登录事件的函数
 const userLoggedInGA = async () => {
   event("user-logged-in", {
     event_category: "analytics",

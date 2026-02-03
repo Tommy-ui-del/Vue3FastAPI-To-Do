@@ -1,3 +1,4 @@
+#配置 Git 预提交钩子，ruff的预提交仓库，在代码提交前自动执行代码检查和格式化，强制保证代码规范，减少语法错误和风格不统一问题
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
