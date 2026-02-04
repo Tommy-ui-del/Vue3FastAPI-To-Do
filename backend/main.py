@@ -1,3 +1,6 @@
+#作用：这是 FastAPI 应用的入口。它负责创建应用实例 (app = FastAPI())，挂载路由，配置中间件（如 CORS 跨域设置），并启动服务器。
+#配合：它将 routers（路由）引入，告诉服务器当访问 /todos 时该去哪里找处理函数
+
 #初始化 FastAPI 应用，注册路由，配置跨域，启动时创建数据库表
 
 from contextlib import asynccontextmanager

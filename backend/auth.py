@@ -71,19 +71,20 @@ async def get_current_user(
     return user
 
 
-# 生成访问令牌
+# 访问令牌（Access Token）：短期有效，用于日常API请求认证 （访问令牌泄露后影响时间短）
 def create_access_token(subject: str | Any, expires_delta: int = None) -> str:
      # 设置过期时间：默认使用配置中的30分钟，否则使用传入的过期时间
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
         expires_delta = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    # 令牌载荷：包含过期时间和主题（用户名/邮箱）
+    # 令牌载荷：包含过期时间和主题（用户名/邮箱） exp：过期时间戳sub：主题（用户标识）
     to_encode = {"exp": expires_delta, "sub": str(subject)}
+    #使用不同的密钥（JWT_ACCESS_SECRET_KEY和JWT_REFRESH_SECRET_KEY）分别加密两种令牌
     encoded_jwt = jwt.encode(to_encode, settings.JWT_ACCESS_SECRET_KEY, settings.ENCRYPTION_ALGORITHM)
     return encoded_jwt
 
-# 生成刷新令牌（逻辑同访问令牌，使用刷新令牌秘钥）
+# 生成刷新令牌（Refresh Token）：长期有效，用于获取新的访问令牌 （用户无需频繁登录）
 def create_refresh_token(subject: str | Any, expires_delta: int = None) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
