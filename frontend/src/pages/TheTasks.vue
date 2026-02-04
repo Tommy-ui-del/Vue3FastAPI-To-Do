@@ -10,7 +10,7 @@
         <!-- 如果没有任务，显示提示信息 -->
         <div v-if="currentTasks.length === 0" class="no-tasks" style="display: flex; flex-direction: column">
           <div class="unselectable"> {{ formatDate(new Date(currentDate)) }} </div>
-          <h2 class="unselectable">No Tasks to Display</h2>
+          <h2 class="unselectable">无任务可展示</h2>
         </div>
         <!-- 如果有任务，显示任务列表 -->
         <div v-else>
@@ -21,10 +21,10 @@
           <!-- 任务列表表头 -->
           <div class="flex-headers unselectable">
             <div class="header-number">#</div>
-            <div class="header-text">Description</div>
-            <div class="header-edit" v-show="showButtons">Edit</div>0..0
-            <div class="header-delete" v-show="showButtons">Del.</div>
-            <div class="header-completed">Status</div>
+            <div class="header-text">描述</div>
+            <div class="header-edit" v-show="showButtons">编辑</div>
+            <div class="header-delete" v-show="showButtons">删除</div>
+            <div class="header-completed">状态</div>
           </div>
         </div>
         <!-- 使用draggable组件实现任务拖拽排序 -->
@@ -63,13 +63,13 @@
           <form class="form-control" @submit.prevent="taskStore.addNewTask" v-if="!isLoading">
             <input class="task-input" @blur="taskStore.clearInvalidInput" @keyup="taskStore.clearInvalidInput"
               v-model="enteredText" type="text" aria-label="Add task" />
-            <button class="button-74">Add</button>
+            <button class="button-74">添加</button>
           </form>
           <!-- 加载动画 -->
           <the-spinner v-else></the-spinner>
         </div>
         <!-- 无效输入提示 -->
-        <span v-if="invalidInput" class="invalid-input">Please Enter Text</span>
+        <span v-if="invalidInput" class="invalid-input">请输入文本</span>
       </post-it>
     </div>
 
@@ -82,14 +82,14 @@
         <!-- 任务统计 -->
       <div v-if="totalTasks" class="task-status">
         <p>
-          # Tasks: <span id="total-tasks">{{ totalTasks }}</span>
+          # 总任务: <span id="total-tasks">{{ totalTasks }}</span>
         </p>
         <p>
-          # Completed tasks:
+          # 已完成任务:
           <span id="complete-tasks">{{ completedTasks }}</span>
         </p>
         <p>
-          # Not completed tasks:
+          #未完成任务:
           <span id="uncomplete-tasks">{{ notCompletedTasks }}</span>
         </p>
       </div>

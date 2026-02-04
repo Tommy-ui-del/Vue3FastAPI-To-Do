@@ -6,8 +6,7 @@
     <!-- 演示提示区域 -->
     <div class="demo">
       <p>
-        This page is for demonstration purposes only. All data will be lost
-        after a page refresh
+        本页仅供演示用途。页面刷新后所有数据都会丢失
       </p>
     </div>
     <!-- 任务列表区域 -->
@@ -17,7 +16,7 @@
         <!-- 如果没有任务，显示提示信息 -->
         <div v-if="!display" class="no-tasks" style="display: flex; flex-direction: column">
           <div class="unselectable"> {{ formatDate(new Date(date)) }} </div>
-          <h2 class="unselectable">No Tasks to Display</h2>
+          <h2 class="unselectable">没有任务可显示</h2>
         </div>
         <!-- 如果有任务，显示任务列表 -->
         <div v-else>
@@ -32,17 +31,16 @@
           <!-- 任务列表表头 -->
           <div class="flex-headers unselectable">
             <div class="header-number">#</div>
-            <div class="header-text">Description</div>
-            <div class="header-edit" v-show="showButtons">Edit</div>
-            <div class="header-delete" v-show="showButtons">Del.</div>
-            <div class="header-completed">Status</div>
+            <div class="header-text">描述</div>
+            <div class="header-edit" v-show="showButtons">编辑</div>
+            <div class="header-delete" v-show="showButtons">删除</div>
+            <div class="header-completed">状态</div>
           </div>
         </div>
 
-        <!-- 使用draggable组件实现任务拖拽排序 -->
+        <!-- 使用draggable组件实现任务拖拽排序 draggable组件只能有一个dom（div）组件，注释也不能跟div同级-->
         <draggable :list="tasksSlice.tasks" item-key="task_id" @change="updateList">
           <template #item="{ element }">
-            <!-- 单个任务项 -->
             <div class="flexbox">
               <!-- 任务优先级 -->
               <div class="flex-id">
@@ -63,22 +61,23 @@
                 <img src="@/assets/tasks/delete.png" alt="delete-image" class="delete-img" @click="deleteTask(element)"
                   v-show="showButtons === element.priority" />
                 <!-- 完成状态切换按钮 -->
-                  <img @click="checkUncheck(element)" :src="element.completed ? uncheckedBox : checkedBox" alt="status"
+                  <img @click="checkUncheck(element)" :src="element.completed ? checkedBox : uncheckedBox" alt="status"
                   class="status-img" />
               </div>
             </div>
           </template>
         </draggable>
+
         <!-- 添加新任务的表单 -->
         <div>
           <form class="form-control" @submit.prevent="addTask">
             <input class="task-input" @blur="clearInvalidInput" @keyup="clearInvalidInput" v-model="enteredText"
               type="text" aria-label="Add task" />
-            <button class="button-74">Add</button>
+            <button class="button-74">添加</button>
           </form>
         </div>
         <!-- 无效输入提示 -->
-        <span v-if="invalidInput" class="invalid-input">Please Enter Text</span>
+        <span v-if="invalidInput" class="invalid-input">请输入文本</span>
       </post-it>
     </div>
 
@@ -91,14 +90,14 @@
       <!-- 任务统计 -->
         <div v-if="totalTasks" class="task-status">
         <p>
-          # Tasks: <span id="total-tasks">{{ totalTasks }}</span>
+          # 总任务: <span id="total-tasks">{{ totalTasks }}</span>
         </p>
         <p>
-          # Completed tasks:
+          # 已完成任务:
           <span id="complete-tasks">{{ completedTasks }}</span>
         </p>
         <p>
-          # Not completed tasks:
+          #未完成任务:
           <span id="uncomplete-tasks">{{ notCompletedTasks }}</span>
         </p>
       </div>
@@ -223,6 +222,8 @@ function applyEditChanges(element) {
     tasksSlice.value.tasks.forEach((el, idx) => {
       if (element.task_id === el.task_id) {
         tasksSlice.value.tasks[idx].text = editedText.value;
+        // 新增这一行：编辑完成后关闭编辑状态
+        tasksSlice.value.tasks[idx].editable = false; 
       }
     });
   }

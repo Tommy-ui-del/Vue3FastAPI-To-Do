@@ -3,19 +3,19 @@
   <the-header></the-header>
   <main>
     <!-- 欢迎标题 -->
-    <h1>Welcome to the to-do list app</h1>
-    <h2>Simple, yet powerful task management application</h2>
+    <h1>欢迎使用待办事项APP</h1>
+    <h2>简单但强大的任务管理应用</h2>
     
     <!-- 演示链接区域 -->
     <div class="linksbox">
       <post-it id="demo-link">
         <div class="inner-demo-link">
           <p>
-            <strong> Try Demo Playground. No registration required! </strong>
+            <strong> 试试演示操作。 无需注册! </strong>
           </p>
           <!-- 演示按钮，点击跳转到演示页面并跟踪事件 -->
           <button @click="router.push({ name: 'Demo' });demoAnalytics();" class="button-74">
-            Demo
+            演示
           </button>
         </div>
       </post-it>

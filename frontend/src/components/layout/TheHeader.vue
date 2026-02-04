@@ -6,18 +6,18 @@
     <nav>
       <h1 class="app-name">
         <!-- 应用名称链接，点击跳转到首页 -->
-        <router-link :to="{ name: 'Home' }"> to-do app </router-link>
+        <router-link :to="{ name: 'Home' }"> 待办 APP </router-link>
       </h1>
     </nav>
     <!-- 未登录状态显示注册和登录按钮 -->
     <button v-if="!loggedIn" @click="router.push({ name: 'Registration' })" class="button-74">
-      Register
+      注册
     </button>
     <button v-if="!loggedIn" @click="router.push({ name: 'Authorization' })" class="button-74" id="login-button">
-      Log In
+      登录
     </button>
     <!-- 已登录状态显示登出按钮 -->
-    <button v-else class="button-74" @click="authStore.logout()">Logout</button>
+    <button v-else class="button-74" @click="authStore.logout()">登出</button>
   </header>
 </template>
 

@@ -3,11 +3,11 @@
   <PostIt class="post-it">
     <!-- 登录表单，提交时调用handleLogin方法 -->
     <form @submit.prevent="handleLogin">
-      <h2>Login to Continue</h2>
+      <h2>登录账户</h2>
       <!-- 用户名/邮箱输入框 -->
       <div class="icon-div">
         <img src="@/assets/register/user.png" alt="user" class="user-img" />
-        <input type="text" placeholder="Username or Email" name="uname" required v-model="username"
+        <input type="text" placeholder="用户名或邮箱" name="uname" required v-model="username"
           @blur="authStore.clearError()" />
       </div>
 
@@ -15,14 +15,14 @@
       <div class="icon-div">
         <img src="@/assets/register/password.png" alt="password" class="password-img" />
 
-        <input id="inline-input" :type="passwordType" placeholder="Password" name="psw" required v-model="password"
+        <input id="inline-input" :type="passwordType" placeholder="密码" name="psw" required v-model="password"
           @blur="authStore.clearError()" />
           <!-- 显示/隐藏密码的图标 -->
           <img :src="showPassword ? openEyesURL : closedEyesURL" alt="show-password" class="show-password-img"
           @click="toggleShow" />
       </div>
       <!-- 登录按钮 -->
-      <button class="button-74" type="submit">Login</button>
+      <button class="button-74" type="submit">登录</button>
       <!-- 错误消息显示 -->
       <div id="error-message" v-if="errorLogIn">
         {{ errorMessage }}
@@ -31,17 +31,17 @@
 
       <!-- 注册链接 -->
       <div style="margin-top: 15px;">
-        Don't have an account yet?
-        <router-link to="/register">Register</router-link>
+        没有账户?
+        <router-link to="/register">注册</router-link>
       </div>
 
       <!-- 分隔线 -->
-      <p class="decorated mt-5" style="user-select: none"><span>or</span></p>
+      <p class="decorated mt-5" style="user-select: none"><span>或</span></p>
 
       <!-- Google登录按钮 -->
       <div class="icon-div" id="google" @click="authStore.googleAuthenticate()">
-        <img src="@/assets/register/google.png" alt="password" class="password-img" />
-        <input id="inline-input" placeholder="Continue with Google" readonly style="cursor: pointer;" />
+        <img src="@/assets/register/google.png" alt="password" class="password-img" style="margin-left:50px"/>
+        <input id="inline-input" placeholder="谷歌登录" readonly style="cursor: pointer;" />
       </div>
 
     </form>

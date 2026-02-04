@@ -87,7 +87,7 @@ async def login_with_google(
     # email field is case insensitive, db holds only lower case representation
     email: str = user_info.get("email", "").lower()
     if not email:
-        HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email was not provided")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email was not provided")
     # 检查用户是否存在：不存在则创建，存在则更新最后登录时间
     if not (user := await user_repo.get_user_by_email(email=email)):
         user: User = await user_repo.create_user_from_google_credentials(**user_info)
@@ -160,7 +160,7 @@ async def get_new_access_token_from_refresh_token(
         username, expires_delta=timedelta(minutes=settings.NEW_ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     new_refresh_token = create_refresh_token(
-        username, expires_delta=timedelta(settings.NEW_REFRESH_TOKEN_EXPIRE_MINUTES)
+        username, expires_delta=timedelta(minutes=settings.NEW_REFRESH_TOKEN_EXPIRE_MINUTES)
     )
 
     return {"access_token": new_access_token, "refresh_token": new_refresh_token}

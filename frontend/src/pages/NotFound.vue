@@ -1,3 +1,3 @@
 <template>
-  <h1>Page not found, try again</h1>
+  <h1>未找到页面，请稍后重试</h1>
 </template>

@@ -2,7 +2,7 @@
   <footer>
     <!-- 显示版权信息 -->
     <p class="footer-text">
-      <strong>Bekzod Mirahmedov</strong> &copy; &nbsp; <!-- 加粗 / 版权符号 /自动更新显示当前年份 -->
+      <strong>作者：Bekzod Mirahmedov</strong> &copy; &nbsp; <!-- 加粗 / 版权符号 /自动更新显示当前年份 -->
       {{ new Date().getFullYear() }}
     </p>
   </footer>

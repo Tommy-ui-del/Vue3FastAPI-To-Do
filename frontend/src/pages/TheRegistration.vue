@@ -4,12 +4,12 @@
     <!-- 注册表单，提交时调用submitRegistrationDetails方法 -->
     <form @submit.prevent="submitRegistrationDetails">
       <div class="container">
-        <h2>Create an Account</h2>
+        <h2>创建账户</h2>
 
         <!-- 姓名输入框 -->
         <div class="icon-div" :class="{ isError: errorName }">
           <img src="@/assets/register/user.png" alt="user" class="user-img" />
-          <input type="text" placeholder="Enter name" v-model="name" @blur="errorName = ''" @keypress="errorName = ''" />
+          <input type="text" placeholder="姓名" v-model="name" @blur="errorName = ''" @keypress="errorName = ''" />
         </div>
         <!-- 姓名错误提示 -->
         <span v-if="errorName" class="error">{{ errorName }}<br /></span>
@@ -18,7 +18,7 @@
         <!-- @blur 是 Vue 中的事件修饰符，用于监听元素的失去焦点事件,当用户离开输入框时，清除对应的错误提示,常与 @keypress 事件配合使用，在用户开始输入时就清除错误提示-->
         <div class="icon-div" :class="{ isError: errorEmail }">
           <img src="@/assets/register/email.png" alt="email" class="email-img" />
-          <input type="text" placeholder="Enter email" v-model="email" @blur="errorEmail = ''"
+          <input type="text" placeholder="邮箱号" v-model="email" @blur="errorEmail = ''"
             @keypress="errorEmail = ''" />
         </div>
         <!-- 邮箱错误提示 -->
@@ -27,7 +27,7 @@
         <!-- 用户名输入框 -->
         <div class="icon-div" :class="{ isError: errorUsername }">
           <img src="@/assets/register/username.png" alt="username" class="username-img" />
-          <input type="text" placeholder="Enter username" v-model="username" @blur="errorUsername = ''"
+          <input type="text" placeholder="用户名" v-model="username" @blur="errorUsername = ''"
             @keypress="errorUsername = ''" />
         </div>
         <!-- 用户名错误提示 -->
@@ -36,7 +36,7 @@
         <!-- 密码输入框 -->
         <div class="icon-div" :class="{ isError: errorPassword }">
           <img src="@/assets/register/password.png" alt="password" class="password-img" />
-          <input id="inline-input" :type="passwordType" placeholder="Enter password" v-model="password"
+          <input id="inline-input" :type="passwordType" placeholder="密码" v-model="password"
             @blur="errorPassword = ''" @keypress="errorPassword = ''" />
             <!-- 显示/隐藏密码的图标 -->
             <img :src="showPassword ? openEyesURL : closedEyesURL" alt="show-password" class="show-password-img"
@@ -51,7 +51,7 @@
               ? 'password-is-confirmed'
               : 'password-not-confirmed'
               " />
-          <input :type="passwordType" placeholder="Re-enter password" v-model="passwordConfirmation"
+          <input :type="passwordType" placeholder="重复密码" v-model="passwordConfirmation"
             @blur="errorPassword = ''" @keypress="errorPassword = ''" />
         </div>
         <!-- 密码错误提示 -->
@@ -62,21 +62,21 @@
           {{ errorRegister }}</span>
         <span v-else><br /></span>
         <!-- 注册按钮 -->
-        <button class="button-74" type="submit">Register</button>
+        <button class="button-74" type="submit">注册</button>
 
         <!-- 登录链接 -->
         <div style="margin-top: 15px;">
-          Already have an account?
-          <router-link to="/login">Login</router-link>
+          已有账号?
+          <router-link to="/login">登录</router-link>
         </div>
 
         <!-- 分隔线 -->
-        <p class="decorated mt-5" style="user-select: none"><span>or</span></p>
+        <p class="decorated mt-5" style="user-select: none"><span>或</span></p>
         
-        <!-- Google登录按钮 -->
+        <!-- Google登录按钮(需在谷歌云平台进行注册和配置) -->
         <div class="icon-div" id="google" @click="authStore.googleAuthenticate()">
-          <img src="@/assets/register/google.png" alt="password" class="password-img" />
-          <input id="inline-input" placeholder="Continue with Google" readonly style="cursor: pointer;" />
+          <img src="@/assets/register/google.png" alt="password" class="password-img" style="margin-left:50px"/>
+          <input id="inline-input" placeholder="谷歌注册" readonly style="cursor: pointer;" />
         </div>
       </div>
     </form>
@@ -244,7 +244,7 @@ watch([password, passwordConfirmation], () => {
 
 .icon-div {
   display: flex;
-  flex-direction: row;
+  align-items: center;
   border: 1px solid #374669;
   border-radius: 5px;
   background: #fff;
